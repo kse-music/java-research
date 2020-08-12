@@ -150,14 +150,9 @@ public class MongoDemo {
 
     @Test
     public void find(){
-        mongoClient = MongoHelper.mongoClient("192.168.4.22",19130);
-        for (String listDatabaseName : mongoClient.listDatabaseNames()) {
-            String[] s = listDatabaseName.split("_");
-            if(s.length > 1 && s[1].equals("graph") && !listDatabaseName.contains("intent")){
-                setDefault(listDatabaseName,0,mongoClient);
-                setDefault(listDatabaseName,1,mongoClient);
-                setDefault(listDatabaseName,2,mongoClient);
-            }
+        mongoClient = MongoHelper.mongoClient("192.168.4.30",19130);
+        for (Document document : mongoClient.getDatabase("test").getCollection("entity").listIndexes()) {
+            System.out.println(document);
         }
     }
 
