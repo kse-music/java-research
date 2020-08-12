@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="false">
+
+    <property name="pattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level ${PID:- } --- [%15thread] %-40logger{39} %-5L : %msg%n" />
+    <property name="console_pattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %green(%-5level) %magenta(${PID:- }) --- [%5t] %cyan(%-40logger{39}) %L : %msg%n" />
+    <property name="console_pattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %green(%-5level) %magenta(${PID:- }) --- [%5t] %replace(%caller{1}){'\t|Caller.{1}0|\r\n', ''} : %msg%n" />
+
+    <property name="fileFilter" value="info"/>
+    <property name="filePath" value="/work/logs/java-research/error.log"/>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${console_pattern}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE_INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>${fileFilter}</level>
+        </filter>
+        <!--<filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>info</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>-->
+        <!--当天生成的日志文件名称-->
+        <file>${filePath}</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--日志文件输出的文件名-->
+            <FileNamePattern>${filePath}-%d{yyyy-MM-dd}.gz</FileNamePattern>
+            <!--归档日志文件保留天数-->
+            <MaxHistory>30</MaxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${pattern}</pattern>
+        </encoder>
+    </appender>
+
+    <root><!-- 也是logger,默认是DEBUG -->
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="FILE_INFO" />
+    </root>
+
+    <!--logger中的additivity设置为false是代表该logger日志打印不向上传递，默认为true-->
+    <!--不指定级别则继承root的级别,没有设置appender，此logger本身不打印任何信息。-->
+    <logger name="org" level="WARN"/>
+    <logger name="io" level="WARN" />
+
+</configuration>
