@@ -147,7 +147,6 @@ public class SimpleDemo {
         for (int value : num) {
             map.add(value);
         }
-        log.info("1");
         int temp = 120;
         if (map.exist(temp)) {
             System.out.println("temp:" + temp + " has already exists");
