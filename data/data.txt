@@ -1,0 +1,3 @@
+{"name":"刘德华","title":"刘德华就是刘德华","content":"这是一篇关于华仔的文章"}
+{"name":"Liu De Hua","title":"Liu De Hua is Andy","content":"this is passage about Liu De Hua"}
+{"name":"张学友","title":"张学友是歌神","content":"这是一篇关于学友哥的报道"}
