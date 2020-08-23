@@ -2,10 +2,10 @@ package cn.hiboot.java.research.db.mongo;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.mongodb.MongoClient;
 import com.mongodb.bulk.BulkWriteResult;
 import com.mongodb.client.*;
 import com.mongodb.client.model.*;
+import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.junit.jupiter.api.Test;
@@ -154,6 +154,15 @@ public class MongoDemo {
         for (Document document : mongoClient.getDatabase("test").getCollection("entity").listIndexes()) {
             System.out.println(document);
         }
+        deleteFromArray();
+    }
+
+    /**
+     * 从数组集合中删除一个元素
+     */
+    private void deleteFromArray(){
+        UpdateResult updateResult = mongoClient.getDatabase("test").getCollection("basic").updateOne(new Document("id", 1L), Updates.pull("ids", new Document("$gt", 1000001)));
+        System.out.println(updateResult);
     }
 
 

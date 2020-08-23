@@ -1,8 +1,9 @@
 package cn.hiboot.java.research.db.mongo;
 
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientOptions;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.ServerAddress;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -15,15 +16,16 @@ import java.util.stream.Collectors;
  */
 public class MongoHelper {
 
-    public static MongoClient mongoClient(String ip,int port){
-        MongoClientOptions options = MongoClientOptions.builder().build();
-        return new MongoClient(new ServerAddress(ip, port), options);
+    public static MongoClient mongoClient(String ip, int port){
+        return mongoClient(ip + ":" + port);
     }
 
     public static MongoClient mongoClient(String host){
         String[] split = host.split(",");
-        MongoClientOptions options = MongoClientOptions.builder().build();
-        return new MongoClient(Arrays.stream(split).map(ServerAddress::new).collect(Collectors.toList()), options);
+        return MongoClients.create(
+                MongoClientSettings.builder()
+                        .applyToClusterSettings(builder -> builder.hosts(Arrays.stream(split).map(ServerAddress::new).collect(Collectors.toList())))
+                        .build());
     }
 
 }

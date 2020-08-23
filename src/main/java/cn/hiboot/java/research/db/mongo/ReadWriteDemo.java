@@ -2,7 +2,7 @@ package cn.hiboot.java.research.db.mongo;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.mongodb.MongoClient;
+import com.mongodb.client.MongoClient;
 import com.mongodb.client.model.InsertManyOptions;
 import org.bson.Document;
 import org.junit.jupiter.api.Test;
