@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 
 public class MongoDemo {
 
-    private MongoClient mongoClient = MongoHelper.mongoClient("192.168.1.159",19130);
+    private MongoClient mongoClient = MongoHelper.mongoClient("192.168.4.30",19130);
 
     @Test
     public void bulk(){
@@ -150,18 +150,27 @@ public class MongoDemo {
 
     @Test
     public void find(){
-        mongoClient = MongoHelper.mongoClient("192.168.4.30",19130);
-        for (Document document : mongoClient.getDatabase("test").getCollection("entity").listIndexes()) {
-            System.out.println(document);
-        }
+//        for (Document document : mongoClient.getDatabase("test").getCollection("entity").listIndexes()) {
+//            System.out.println(document);
+//        }
+
+        pushToArray();
         deleteFromArray();
     }
 
     /**
      * 从数组集合中删除一个元素
      */
+    private void pushToArray(){
+        UpdateResult updateResult = mongoClient.getDatabase("test").getCollection("basic").updateOne(new Document("id", 1L), Updates.push("ids", 123));
+        System.out.println(updateResult);
+    }
+
+    /**
+     * 从数组集合中删除一个元素
+     */
     private void deleteFromArray(){
-        UpdateResult updateResult = mongoClient.getDatabase("test").getCollection("basic").updateOne(new Document("id", 1L), Updates.pull("ids", new Document("$gt", 1000001)));
+        UpdateResult updateResult = mongoClient.getDatabase("test").getCollection("basic").updateOne(new Document("id", 1L), Updates.pull("ids", new Document("$gt", 1L)));
         System.out.println(updateResult);
     }
 
@@ -228,9 +237,9 @@ public class MongoDemo {
     @Test
     public void tx(){
         //多文档事务执行的时候,不会自动创建命名空间
-//        mongoClient = MongoHelper.mongoClient("192.168.1.159:19130,192.168.1.159:19131");
-//        mongoClient.getDatabase("tx").createCollection("foo");
-//        mongoClient.getDatabase("tx").createCollection("bar");
+        MongoClient mongoClient = MongoHelper.mongoClient("192.168.4.30:19130,192.168.4.30:19131");
+        mongoClient.getDatabase("tx").createCollection("foo");
+        mongoClient.getDatabase("tx").createCollection("bar");
         try (ClientSession clientSession = mongoClient.startSession()){
             clientSession.startTransaction();
             MongoCollection<Document> coll1 = mongoClient.getDatabase("tx").getCollection("foo");
