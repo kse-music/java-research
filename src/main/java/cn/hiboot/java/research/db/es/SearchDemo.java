@@ -164,15 +164,16 @@ public class SearchDemo {
     @Test
     public void dataIn() throws IOException {
         //读取刚才导出的ES数据
-        try(BufferedReader br = new BufferedReader(new FileReader("data/data.txt"))){
+        try(BufferedReader br = new BufferedReader(new FileReader("/work/data/gremlin.txt"))){
             //开启批量插入
             BulkRequest request = new BulkRequest().timeout(TimeValue.timeValueMinutes(2));
             String json;
             while ((json = br.readLine()) != null) {
-                request.add(new IndexRequest(INDEX).source(json, XContentType.JSON));
+                request.add(new IndexRequest("gremlin").source(json, XContentType.JSON));
                 //每一千条提交一次
-                if (request.numberOfActions() % 1000 == 0) {
+                if (request.numberOfActions() % 10000 == 0) {
                     client.bulk(request, RequestOptions.DEFAULT);
+                    request = new BulkRequest().timeout(TimeValue.timeValueMinutes(2));
                 }
             }
             if (request.numberOfActions() != 0) {
