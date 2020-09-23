@@ -6,6 +6,10 @@ import com.mongodb.ServerAddress;
 import com.mongodb.WriteConcern;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
+import com.mongodb.event.CommandFailedEvent;
+import com.mongodb.event.CommandListener;
+import com.mongodb.event.CommandStartedEvent;
+import com.mongodb.event.CommandSucceededEvent;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -30,6 +34,22 @@ public class MongoHelper {
         String[] split = host.split(",");
         return MongoClients.create(
                 MongoClientSettings.builder()
+                        .addCommandListener(new CommandListener() {
+                            @Override
+                            public void commandStarted(CommandStartedEvent event) {
+                                System.out.println(event);
+                            }
+
+                            @Override
+                            public void commandSucceeded(CommandSucceededEvent event) {
+                                System.out.println(event);
+                            }
+
+                            @Override
+                            public void commandFailed(CommandFailedEvent event) {
+                                System.out.println(event);
+                            }
+                        })
                         .applyToClusterSettings(builder -> builder.hosts(Arrays.stream(split).map(ServerAddress::new).collect(Collectors.toList())))
                         .build());
     }
