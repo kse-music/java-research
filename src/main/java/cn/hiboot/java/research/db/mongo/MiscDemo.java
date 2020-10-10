@@ -68,8 +68,6 @@ public class MiscDemo extends MongoTest{
 
     @Test
     public void basic() {
-        MongoCollection<Document> collection = mongoDatabase.getCollection("test");
-
         collection.insertOne(new Document("title", "MongoDB").
                 append("description", "database").
                 append("likes", 100).
@@ -91,7 +89,6 @@ public class MiscDemo extends MongoTest{
 
     @Test
     public void bulk() {
-        MongoCollection<Document> collection = mongoClient.getDatabase("test").getCollection("test");
         Document data = new Document("title", "MongoDB").
                 append("description", "database").
                 append("likes", 100).

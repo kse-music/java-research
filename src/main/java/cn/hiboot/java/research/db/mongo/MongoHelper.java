@@ -34,22 +34,22 @@ public class MongoHelper {
         String[] split = host.split(",");
         return MongoClients.create(
                 MongoClientSettings.builder()
-                        .addCommandListener(new CommandListener() {
-                            @Override
-                            public void commandStarted(CommandStartedEvent event) {
-                                System.out.println(event);
-                            }
-
-                            @Override
-                            public void commandSucceeded(CommandSucceededEvent event) {
-                                System.out.println(event);
-                            }
-
-                            @Override
-                            public void commandFailed(CommandFailedEvent event) {
-                                System.out.println(event);
-                            }
-                        })
+//                        .addCommandListener(new CommandListener() {
+//                            @Override
+//                            public void commandStarted(CommandStartedEvent event) {
+//                                System.out.println(event);
+//                            }
+//
+//                            @Override
+//                            public void commandSucceeded(CommandSucceededEvent event) {
+//                                System.out.println(event);
+//                            }
+//
+//                            @Override
+//                            public void commandFailed(CommandFailedEvent event) {
+//                                System.out.println(event);
+//                            }
+//                        })
                         .applyToClusterSettings(builder -> builder.hosts(Arrays.stream(split).map(ServerAddress::new).collect(Collectors.toList())))
                         .build());
     }

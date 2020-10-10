@@ -29,7 +29,7 @@ public class WatchDemo extends MongoTest{
 
     @Test
     public void watchCollection(){
-        for (ChangeStreamDocument<Document> watch : mongoDatabase.getCollection("test").watch()) {
+        for (ChangeStreamDocument<Document> watch : collection.watch()) {
             System.out.println(watch);
         }
     }
