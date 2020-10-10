@@ -3,9 +3,7 @@ package cn.hiboot.java.research.db.mongo;
 import com.google.common.collect.Lists;
 import com.mongodb.bulk.BulkWriteResult;
 import com.mongodb.client.AggregateIterable;
-import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.*;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
@@ -72,16 +70,13 @@ public class MiscDemo extends MongoTest{
     public void basic() {
         MongoCollection<Document> collection = mongoDatabase.getCollection("test");
 
-        Document document = new Document("title", "MongoDB").
+        collection.insertOne(new Document("title", "MongoDB").
                 append("description", "database").
                 append("likes", 100).
-                append("by", "Fly");
-        collection.insertOne(document);
+                append("by", "Fly"));
 
-        FindIterable<Document> findIterable = collection.find();
-        for (Document next : findIterable) {
+        for (Document next : collection.find()) {
             System.out.println(next);
-//            collection.deleteOne(Filters.eq(next.get("_id").toString()));
         }
 
         //更新文档
@@ -91,7 +86,7 @@ public class MiscDemo extends MongoTest{
         collection.deleteOne(Filters.eq("likes", 200));
 
         //删除所有符合条件的文档
-        collection.deleteMany (Filters.eq("likes", 200));
+        collection.deleteMany(Filters.eq("likes", 200));
     }
 
     @Test
