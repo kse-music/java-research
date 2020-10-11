@@ -119,7 +119,7 @@ public class IndexDemo {
             try {
                 AcknowledgedResponse deleteIndexResponse = client.indices().delete(request, RequestOptions.DEFAULT);
                 log.info("result = {}", deleteIndexResponse.isAcknowledged());
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
