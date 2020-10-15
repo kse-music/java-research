@@ -84,7 +84,6 @@ public class SearchDemo {
 
     @Test
     public void scroll() throws Exception {
-        final Scroll scroll = new Scroll(TimeValue.timeValueMinutes(1L));
 
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder()
                 .query(QueryBuilders.matchAllQuery())
@@ -92,7 +91,7 @@ public class SearchDemo {
 
         SearchRequest searchRequest = new SearchRequest(INDEX)
                 .source(searchSourceBuilder)
-                .scroll(scroll);
+                .scroll(TimeValue.timeValueMinutes(1));
 
         SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
         String scrollId = searchResponse.getScrollId();
@@ -106,15 +105,13 @@ public class SearchDemo {
         file.createNewFile();
         BufferedWriter out = new BufferedWriter(new FileWriter(file, true));
 
-        SearchScrollRequest scrollRequest = new SearchScrollRequest().scroll(scroll);
+        SearchScrollRequest scrollRequest = new SearchScrollRequest().scrollId(scrollId);
         while (searchHits != null && searchHits.length > 0) {
             for (SearchHit searchHit : searchHits) {
                 out.write(searchHit.getSourceAsString());
                 out.write("\r\n");
             }
-            scrollRequest.scrollId(scrollId);
             searchResponse = client.scroll(scrollRequest, RequestOptions.DEFAULT);
-            scrollId = searchResponse.getScrollId();
             searchHits = searchResponse.getHits().getHits();
         }
         out.close();
