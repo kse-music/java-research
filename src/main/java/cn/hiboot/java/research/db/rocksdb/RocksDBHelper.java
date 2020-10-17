@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * description about this class
@@ -18,11 +19,11 @@ import java.util.function.Consumer;
  */
 public class RocksDBHelper {
 
-    public static void execute(String dbPath, Consumer<RocksDB> consumer) throws RocksDBException {
+    public static void execute(String dbPath, BiConsumer<RocksDB,Options> consumer) throws RocksDBException {
         try (final Options options = new Options().setCreateIfMissing(true)) {
             mkdir(dbPath);
             try (final RocksDB rocksDB = RocksDB.open(options, dbPath)) {
-                consumer.accept(rocksDB);
+                consumer.accept(rocksDB,options);
             }
         }
     }
@@ -33,6 +34,17 @@ public class RocksDBHelper {
             return false;
         }
         return file.mkdirs();
+    }
+
+    public static void destroyDB(String dbPath) throws RocksDBException {
+        RocksDBHelper.execute(dbPath, (rocksDB,options) -> {
+            try{
+                rocksDB.close();
+                RocksDB.destroyDB(dbPath,options);
+            }catch (RocksDBException e){
+                e.printStackTrace();
+            }
+        });
     }
 
     public static void execute(String dbPath, String cfName,BiConsumer<RocksDB,List<ColumnFamilyHandle>> consumer) throws RocksDBException {

@@ -1,9 +1,7 @@
 package cn.hiboot.java.research.db.rocksdb;
 
 import org.junit.jupiter.api.Test;
-import org.rocksdb.ColumnFamilyHandle;
-import org.rocksdb.RocksDBException;
-import org.rocksdb.RocksIterator;
+import org.rocksdb.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,7 +20,7 @@ public class RocksDemo {
 
     @Test
     public void test() throws RocksDBException {
-        RocksDBHelper.execute(dbPath, rocksDB -> {
+        RocksDBHelper.execute(dbPath, (rocksDB,options) -> {
             try{
                 RocksDBHelper.put(rocksDB,"hello","world");
                 byte[] value = RocksDBHelper.get(rocksDB,"hello");
@@ -36,11 +34,16 @@ public class RocksDemo {
         });
     }
 
+    @Test
+    public void destroy() throws RocksDBException {
+        RocksDBHelper.destroyDB(dbPath);
+    }
+
 
     //  RocksDB.DEFAULT_COLUMN_FAMILY
     @Test
     public void testDefaultColumnFamily() throws RocksDBException {
-        RocksDBHelper.execute(dbPath,rocksDB -> {
+        RocksDBHelper.execute(dbPath,(rocksDB,options) -> {
             try{
                 // 简单key-value
                 byte[] key = "Hello".getBytes();
