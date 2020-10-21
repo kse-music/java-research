@@ -27,6 +27,15 @@ public class RocksDBHelper {
             }
         }
     }
+    public static void executeBatch(String dbPath, BiConsumer<RocksDB,Options> consumer) throws RocksDBException {
+        try (final Options options = new Options().setCreateIfMissing(true)) {
+            mkdir(dbPath);
+            options.prepareForBulkLoad();
+            try (final RocksDB rocksDB = RocksDB.open(options, dbPath)) {
+                consumer.accept(rocksDB,options);
+            }
+        }
+    }
 
     private static boolean mkdir(String path){
         File file = new File(path);
@@ -71,6 +80,10 @@ public class RocksDBHelper {
 
     public static void put(RocksDB rocksDB,String key,Object value) throws RocksDBException {
         rocksDB.put(ByteUtil.bytes(key), ByteUtil.bytes(value.toString()));
+    }
+
+    public static void put(WriteBatch batch,String key,Object value) throws RocksDBException {
+        batch.put(ByteUtil.bytes(key), ByteUtil.bytes(value.toString()));
     }
 
     public static byte[] get(RocksDB rocksDB,String key) throws RocksDBException {

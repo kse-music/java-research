@@ -3,8 +3,10 @@ package cn.hiboot.java.research.db.rocksdb;
 import org.junit.jupiter.api.Test;
 import org.rocksdb.*;
 
-import java.util.Arrays;
-import java.util.List;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -19,19 +21,85 @@ public class RocksDemo {
     private static final String dbPath = BASE_PATH.concat("dh_test");
 
     @Test
-    public void test() throws RocksDBException {
+    public void test() throws RocksDBException{
         RocksDBHelper.execute(dbPath, (rocksDB,options) -> {
             try{
-                RocksDBHelper.put(rocksDB,"hello","world");
-                byte[] value = RocksDBHelper.get(rocksDB,"hello");
-
-//                rocksDB.put(ByteUtil.bytes("hello"), ByteUtil.bytes("world"));
+                byte[] value = RocksDBHelper.get(rocksDB,"甲Ⅱ电容器电缆B相");
 //                byte[] value = rocksDB.get(ByteUtil.bytes("hello"));
                 System.out.println(new String(value));
             }catch (RocksDBException e){
                 e.printStackTrace();
             }
         });
+    }
+
+    @Test
+    public void put() throws RocksDBException, IOException {
+        Map<Long,String> data = data(10000000);
+        RocksDBHelper.execute(dbPath, (rocksDB,options) -> {
+            try{
+                long s = System.currentTimeMillis();
+                for (Map.Entry<Long, String> entry : data.entrySet()) {
+                    RocksDBHelper.put(rocksDB,entry.getValue(),entry.getKey());
+                }
+                System.out.println(System.currentTimeMillis()-s);
+            }catch (RocksDBException e){
+                e.printStackTrace();
+            }
+        });
+    }
+
+    @Test
+    public void batch() throws RocksDBException, IOException {
+        Map<Long,String> data = data(10000000);
+        Map<String,Integer> map = new LinkedHashMap<>();
+        map.put("dh_test"+1,1000000);
+        map.put("dh_test"+2,100000);
+        map.put("dh_test"+3,10000);
+        map.put("dh_test"+4,1000);
+        map.put("dh_test"+5,100);
+        map.forEach((k,v) -> {
+            try {
+                RocksDBHelper.executeBatch(BASE_PATH.concat(k), (rocksDB,options) -> {
+                    try{
+                        long s = System.currentTimeMillis();
+                        int i = 0;
+                        WriteOptions writeOpt = new WriteOptions();
+                        WriteBatch batch = new WriteBatch();
+                        for (Map.Entry<Long, String> entry : data.entrySet()) {
+                            RocksDBHelper.put(batch,entry.getValue(),entry.getKey());
+                            i++;
+                            if(i % v == 0){
+                                rocksDB.write(writeOpt, batch);
+                                batch.close();
+                                batch = new WriteBatch();
+                                i = 0;
+                            }
+                        }
+                        if(i != 0){
+                            rocksDB.write(writeOpt, batch);
+                            writeOpt.close();
+                            batch.close();
+                        }
+                        System.out.println("batch size " + v +" cost "+(System.currentTimeMillis()-s));
+                    }catch (RocksDBException e){
+                        e.printStackTrace();
+                    }
+                });
+            } catch (RocksDBException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private Map<Long,String> data(int size) throws IOException {
+        Map<Long,String> data = new HashMap<>(size);
+        List<String> strings = Files.readAllLines(Paths.get("/work/data.txt"));
+        for (String str : strings) {
+            String[] split = str.split("===");
+            data.put(Long.parseLong(split[0]),split[1]);
+        }
+        return data;
     }
 
     @Test

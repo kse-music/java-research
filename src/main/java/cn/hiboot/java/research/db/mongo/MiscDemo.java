@@ -10,6 +10,7 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -89,22 +90,20 @@ public class MiscDemo extends MongoTest{
 
     @Test
     public void bulk() {
-        Document data = new Document("title", "MongoDB").
+        InsertOneModel<Document> insertOneModel = new InsertOneModel<>(new Document("title", "MongoDB").
                 append("description", "database").
                 append("likes", 100).
-                append("by", "Fly");
+                append("by", "Fly"));
 
-        InsertOneModel insertOneModel = new InsertOneModel<>(data);
+        UpdateOneModel<Document> updateOneModel = new UpdateOneModel<>(new Document("likes", 100), new Document("$set", new Document("likes", 200)), new UpdateOptions().upsert(true));
+        UpdateManyModel<Document> updateManyModel = new UpdateManyModel<>(new Document("likes", 100), new Document("$set", new Document("likes", 200)), new UpdateOptions().upsert(true));
 
-        UpdateOneModel updateOneModel = new UpdateOneModel<>(new Document("likes", 100), new Document("$set", new Document("likes", 200)), new UpdateOptions().upsert(true));
-        UpdateManyModel updateManyModel = new UpdateManyModel<>(new Document("likes", 100), new Document("$set", new Document("likes", 200)), new UpdateOptions().upsert(true));
+        ReplaceOneModel<Document> replaceOneModel = new ReplaceOneModel<>(new Document("likes", 200), new Document("likes", 20000), new ReplaceOptions().upsert(true));
 
-        ReplaceOneModel replaceOneModel = new ReplaceOneModel<>(new Document("likes", 200), new Document("likes", 20000), new ReplaceOptions().upsert(true));
+        DeleteOneModel<Document> deleteOneModel = new DeleteOneModel<>(new Document("likes", 20000));
+        DeleteManyModel<Document> deleteManyModel = new DeleteManyModel<>(new Document("likes", 20000));
 
-        DeleteOneModel deleteOneModel = new DeleteOneModel<>(new Document("likes", 20000));
-        DeleteManyModel deleteManyModel = new DeleteManyModel<>(new Document("likes", 20000));
-
-        List<WriteModel<Document>> requests = Lists.newArrayList(insertOneModel, updateOneModel, replaceOneModel, deleteOneModel);
+        List<WriteModel<Document>> requests = Arrays.asList(insertOneModel,updateOneModel,replaceOneModel,deleteOneModel);
 
         BulkWriteResult bulkWriteResult = collection.bulkWrite(requests);
 
