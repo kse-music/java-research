@@ -66,10 +66,10 @@ public class ClassLoaderDemo {
         //线程上下文类加载器
         System.out.println(Thread.currentThread().getContextClassLoader());
 
-        String path = "D:\\IDEAProject\\util\\";
+        String path = "D:\\IDEAProject\\java-research\\";
         CustomClassLoader loader = new CustomClassLoader(Thread.currentThread().getContextClassLoader(), path);
         try {
-            Class<?> clazz = loader.findClass("com.hiekn.demo.test.java.java8.Sa");
+            Class<?> clazz = loader.findClass("cn.hiboot.java.research.java.java8.Sa");
             Object newInstance = clazz.newInstance();
             clazz.getMethod("t").invoke(newInstance);
         } catch (Exception e) {
@@ -80,7 +80,7 @@ public class ClassLoaderDemo {
     @Test
     public void base() {
         //创建自定义classloader对象。
-        DiskClassLoader diskLoader = new DiskClassLoader("F:\\IDEAProject\\test\\target\\classes\\com\\hiekn\\test");
+        DiskClassLoader diskLoader = new DiskClassLoader("F:\\IDEAProject\\java-research\\target\\classes\\com\\hiekn\\test");
 
         try {
             //加载class文件
@@ -108,9 +108,10 @@ public class ClassLoaderDemo {
 
     @Test
     public void twice() throws Exception {
-        Object obj = new MyClassLoader().loadClass("cn.hiboot.java.clsloader.TwiceLoad").newInstance();
+        Object obj = new MyClassLoader().loadClass("cn.hiboot.java.research.java.clsloader.TwiceLoad").newInstance();
         TwiceLoad twiceLoad = new TwiceLoad();
-        System.out.println(obj.getClass());
+        System.out.println(obj.getClass().getClassLoader());
+        System.out.println(twiceLoad.getClass().getClassLoader());
         System.out.println(obj instanceof TwiceLoad);
     }
 
